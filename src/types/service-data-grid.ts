@@ -10,6 +10,10 @@ import type { IGetAllOptions } from "@/generated/models/CommonModels";
  */
 export interface DataService<T> {
 	getAll(options?: IGetAllOptions): Promise<IOperationResult<T[]>>;
+	update?(
+		id: string,
+		changedFields: Partial<T>,
+	): Promise<IOperationResult<T>>;
 }
 
 /**

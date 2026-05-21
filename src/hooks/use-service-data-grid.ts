@@ -1,6 +1,13 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
-import type { ColumnFiltersState, SortingState } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import type { IOperationResult } from "@microsoft/power-apps/data";
+import {
+	type InfiniteData,
+	useInfiniteQuery,
+	useMutation,
+	useQueryClient,
+} from "@tanstack/react-query";
+import type { ColumnDef, ColumnFiltersState, SortingState } from "@tanstack/react-table";
+import { useCallback, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 import { getDataGridSelectColumn } from "@/components/data-grid/data-grid-select-column";
 import { useDataGrid } from "@/hooks/use-data-grid";
@@ -8,6 +15,102 @@ import { filtersToOData, sortingToOData } from "@/lib/odata-filters";
 import type { ServiceDataGridConfig } from "@/types/service-data-grid";
 
 const DEFAULT_PAGE_SIZE = 50;
+
+type RowUpdate<T> = {
+	id: string;
+	changedFields: Partial<T>;
+};
+
+function getUpdatableFieldKeys<T>(columns: ColumnDef<T, unknown>[]): string[] {
+	return columns
+		.map((column) => {
+			if (column.id === "select") return undefined;
+			if ("accessorKey" in column && column.accessorKey) {
+				return String(column.accessorKey);
+			}
+			return column.id;
+		})
+		.filter((field): field is string => Boolean(field));
+}
+
+function valuesEqual(a: unknown, b: unknown): boolean {
+	if (Object.is(a, b)) return true;
+	if (a == null && b == null) return true;
+	if (typeof a === "number" && typeof b === "string") {
+		return a === Number(b);
+	}
+	if (typeof a === "string" && typeof b === "number") {
+		return Number(a) === b;
+	}
+	return false;
+}
+
+function coerceUpdateValue(oldValue: unknown, newValue: unknown): unknown {
+	if (
+		typeof oldValue === "number" &&
+		typeof newValue === "string" &&
+		newValue !== ""
+	) {
+		const parsed = Number(newValue);
+		if (!Number.isNaN(parsed)) return parsed;
+	}
+	return newValue;
+}
+
+function collectRowUpdates<T extends Record<string, unknown>>(
+	oldData: T[],
+	newData: T[],
+	fields: string[],
+	idField: keyof T & string,
+): RowUpdate<T>[] {
+	const updates: RowUpdate<T>[] = [];
+
+	for (let index = 0; index < newData.length; index++) {
+		const oldRow = oldData[index];
+		const newRow = newData[index];
+		if (!oldRow || !newRow) continue;
+
+		const changedFields: Partial<T> = {};
+
+		for (const field of fields) {
+			const oldValue = oldRow[field];
+			const newValue = newRow[field];
+			if (valuesEqual(oldValue, newValue)) continue;
+
+			changedFields[field as keyof T] = coerceUpdateValue(
+				oldValue,
+				newValue,
+			) as T[keyof T];
+		}
+
+		if (Object.keys(changedFields).length > 0) {
+			updates.push({
+				id: String(newRow[idField]),
+				changedFields,
+			});
+		}
+	}
+
+	return updates;
+}
+
+function patchInfiniteQueryCache<T extends Record<string, unknown>>(
+	old: InfiniteData<IOperationResult<T[]>> | undefined,
+	newData: T[],
+	idField: keyof T & string,
+): InfiniteData<IOperationResult<T[]>> | undefined {
+	if (!old) return old;
+
+	const rowById = new Map(newData.map((row) => [String(row[idField]), row]));
+
+	return {
+		...old,
+		pages: old.pages.map((page) => ({
+			...page,
+			data: page.data?.map((row) => rowById.get(String(row[idField])) ?? row) ?? [],
+		})),
+	};
+}
 
 /**
  * Bridges React Query infinite loading with the DiceUI useDataGrid hook.
@@ -18,8 +121,11 @@ const DEFAULT_PAGE_SIZE = 50;
  * 3. Uses useInfiniteQuery with skipToken-based cursor pagination
  * 4. Flattens all pages into a single data array for useDataGrid
  * 5. Configures useDataGrid with manualSorting + manualFiltering (server-side)
+ * 6. Persists cell edits via service.update when readOnly is false
  */
-export function useServiceDataGrid<T>(config: ServiceDataGridConfig<T>) {
+export function useServiceDataGrid<T extends Record<string, unknown>>(
+	config: ServiceDataGridConfig<T>,
+) {
 	const {
 		queryKey,
 		service,
@@ -30,6 +136,8 @@ export function useServiceDataGrid<T>(config: ServiceDataGridConfig<T>) {
 		readOnly = true,
 		enableRowSelection = true,
 	} = config;
+
+	const queryClient = useQueryClient();
 
 	// ─── State for server-side sorting and filtering ───
 	const [sorting, setSorting] = useState<SortingState>(defaultSort);
@@ -42,9 +150,19 @@ export function useServiceDataGrid<T>(config: ServiceDataGridConfig<T>) {
 		[columnFilters, columns],
 	);
 
+	const queryKeyFull = useMemo(
+		() => [queryKey, { orderBy, filter }] as const,
+		[queryKey, orderBy, filter],
+	);
+
+	const updatableFields = useMemo(
+		() => getUpdatableFieldKeys(columns),
+		[columns],
+	);
+
 	// ─── Infinite query with cursor-based pagination ───
 	const query = useInfiniteQuery({
-		queryKey: [queryKey, { orderBy, filter }],
+		queryKey: queryKeyFull,
 		queryFn: async ({ pageParam }) => {
 			const result = await service.getAll({
 				maxPageSize: pageSize,
@@ -74,6 +192,73 @@ export function useServiceDataGrid<T>(config: ServiceDataGridConfig<T>) {
 		return firstPage?.count ?? undefined;
 	}, [query.data]);
 
+	const updateMutation = useMutation({
+		mutationFn: async (updates: RowUpdate<T>[]) => {
+			if (!service.update) {
+				throw new Error("Update is not supported for this service");
+			}
+
+			const results = await Promise.all(
+				updates.map(async ({ id, changedFields }) => {
+					const result = await service.update!(id, changedFields);
+					if (!result.success) {
+						throw result.error ?? new Error("Failed to update record");
+					}
+					return result.data;
+				}),
+			);
+
+			return results;
+		},
+		onSettled: () => {
+			void queryClient.invalidateQueries({ queryKey: [queryKey] });
+		},
+	});
+
+	const onDataChange = useCallback(
+		(newData: T[]) => {
+			if (readOnly || !service.update) return;
+
+			const updates = collectRowUpdates(
+				data,
+				newData,
+				updatableFields,
+				idField,
+			);
+			if (updates.length === 0) return;
+
+			queryClient.setQueryData(
+				queryKeyFull,
+				(old: InfiniteData<IOperationResult<T[]>> | undefined) =>
+					patchInfiniteQueryCache(old, newData, idField),
+			);
+
+			const updateCount = updates.length;
+
+			toast.promise(() => updateMutation.mutateAsync(updates), {
+				loading: "Saving changes...",
+				success:
+					updateCount === 1
+						? "Record updated"
+						: `${updateCount} records updated`,
+				error: (error) =>
+					error instanceof Error
+						? error.message
+						: "Failed to save changes",
+			});
+		},
+		[
+			readOnly,
+			service,
+			data,
+			updatableFields,
+			idField,
+			queryClient,
+			queryKeyFull,
+			updateMutation,
+		],
+	);
+
 	// ─── Prepend select column when enabled ───
 	const tableColumns = useMemo(() => {
 		if (!enableRowSelection) return columns;
@@ -97,6 +282,7 @@ export function useServiceDataGrid<T>(config: ServiceDataGridConfig<T>) {
 		getRowId: (row) => String(row[idField]),
 		readOnly,
 		enableSearch: true,
+		onDataChange: readOnly ? undefined : onDataChange,
 	});
 
 	return {
@@ -117,5 +303,8 @@ export function useServiceDataGrid<T>(config: ServiceDataGridConfig<T>) {
 		isLoading: query.isLoading,
 		isError: query.isError,
 		error: query.error,
+
+		// Mutation state
+		isSaving: updateMutation.isPending,
 	};
 }
