@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useLocation, useNavigate } from "@tanstack/react-router";
+import { useLocation, useRouter } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, Lock, RotateCw } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
@@ -7,19 +7,57 @@ import { toast } from "sonner";
 import ThemeToggle from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 
+function formatLocationAddress(location: {
+	pathname: string;
+	search: Record<string, unknown>;
+	hash: string;
+}): string {
+	const params = Object.entries(location.search)
+		.filter(([, value]) => value !== undefined && value !== null)
+		.map(([key, value]) => {
+			const serialized =
+				typeof value === "string" ? value : JSON.stringify(value);
+			return `${key}=${serialized}`;
+		});
+
+	const search = params.length > 0 ? `?${params.join("&")}` : "";
+	return `${location.pathname}${search}${location.hash ?? ""}`;
+}
+
+function toRouterHref(prettyPath: string): string {
+	const hashIndex = prettyPath.indexOf("#");
+	const hash = hashIndex >= 0 ? prettyPath.slice(hashIndex) : "";
+	const pathAndSearch =
+		hashIndex >= 0 ? prettyPath.slice(0, hashIndex) : prettyPath;
+
+	const queryIndex = pathAndSearch.indexOf("?");
+	const pathname =
+		queryIndex >= 0 ? pathAndSearch.slice(0, queryIndex) : pathAndSearch;
+	const queryString =
+		queryIndex >= 0 ? pathAndSearch.slice(queryIndex + 1) : "";
+
+	if (!queryString) {
+		return `${pathname}${hash}`;
+	}
+
+	return `${pathname}?${new URLSearchParams(queryString).toString()}${hash}`;
+}
+
 export function Header() {
 	const location = useLocation();
-	const navigate = useNavigate();
+	const router = useRouter();
 	const queryClient = useQueryClient();
 
-	const [addressInput, setAddressInput] = React.useState(location.pathname);
+	const [addressInput, setAddressInput] = React.useState(() =>
+		formatLocationAddress(location),
+	);
 	const [isPending, setIsPending] = React.useState(false);
 
-	// Sync address bar input with the active location path
+	// Sync address bar with pathname, search params, and hash
 	React.useEffect(() => {
 		// eslint-disable-next-line react-hooks/set-state-in-effect
-		setAddressInput(location.pathname);
-	}, [location.pathname]);
+		setAddressInput(formatLocationAddress(location));
+	}, [location.hash, location.pathname, location.searchStr]);
 
 	const handleNavigate = (path: string) => {
 		let cleanPath = path.trim();
@@ -30,9 +68,11 @@ export function Header() {
 			cleanPath = "/" + cleanPath;
 		}
 
-		navigate({ to: cleanPath }).catch((err) => {
+		try {
+			router.history.push(toRouterHref(cleanPath));
+		} catch (err) {
 			console.error("Navigation error:", err);
-		});
+		}
 	};
 
 	const onKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {

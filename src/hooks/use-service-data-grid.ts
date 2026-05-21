@@ -46,25 +46,11 @@ export function useServiceDataGrid<T>(config: ServiceDataGridConfig<T>) {
 	const query = useInfiniteQuery({
 		queryKey: [queryKey, { orderBy, filter }],
 		queryFn: async ({ pageParam }) => {
-			console.log(`[ServiceDataGrid] Fetching page for "${queryKey}"`, {
-				pageParam,
-				pageSize,
-				orderBy,
-				filter: filter || "(none)",
-			});
-
 			const result = await service.getAll({
 				maxPageSize: pageSize,
 				orderBy: orderBy.length ? orderBy : undefined,
 				filter: filter || undefined,
 				skipToken: pageParam ?? undefined,
-			});
-
-			console.log(`[ServiceDataGrid] Response for "${queryKey}"`, {
-				success: result.success,
-				recordCount: result.data?.length,
-				skipToken: result.skipToken ?? "(none — last page)",
-				totalCount: result.count,
 			});
 
 			if (!result.success) {
@@ -74,26 +60,13 @@ export function useServiceDataGrid<T>(config: ServiceDataGridConfig<T>) {
 			return result;
 		},
 		initialPageParam: undefined as string | undefined,
-		getNextPageParam: (lastPage) => {
-			const nextToken = lastPage.skipToken ?? undefined;
-			console.log(
-				`[ServiceDataGrid] getNextPageParam for "${queryKey}":`,
-				nextToken ? `"${nextToken}"` : "undefined (no more pages)",
-			);
-			return nextToken;
-		},
+		getNextPageParam: (lastPage) => lastPage.skipToken ?? undefined,
 	});
 
 	// ─── Flatten all pages into a single array ───
 	const data = useMemo(() => {
-		const flattened = query.data?.pages.flatMap((page) => page.data) ?? [];
-		console.log(`[ServiceDataGrid] Flattened data for "${queryKey}":`, {
-			pageCount: query.data?.pages.length ?? 0,
-			totalRecords: flattened.length,
-			hasNextPage: query.hasNextPage,
-		});
-		return flattened;
-	}, [query.data, query.hasNextPage, queryKey]);
+		return query.data?.pages.flatMap((page) => page.data) ?? [];
+	}, [query.data]);
 
 	// ─── Total record count (from first page if available) ───
 	const totalCount = useMemo(() => {

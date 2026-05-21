@@ -18,6 +18,7 @@ export const Route = createRootRouteWithContext<{
 });
 
 function RootLayout() {
+	
 	return (
 		<div className="flex flex-col h-screen bg-background text-foreground antialiased selection:bg-primary/20">
 			{/* Sticky Chrome-style browser header */}

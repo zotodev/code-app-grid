@@ -69,14 +69,15 @@ function filterToOData(
 		return null;
 	}
 
-	// Determine if this is a numeric or date column
+	// Determine if this is a numeric, option-set, or date column
 	const isNumeric = variant === "number";
+	const isOptionSet = variant === "select" || variant === "multi-select";
 	const isDate = variant === "date" || variant === "datetime";
 
 	// Format the value based on type
 	const formatValue = (v: string | number | string[]): string => {
 		if (typeof v === "number") return String(v);
-		if (isNumeric && typeof v === "string") {
+		if ((isNumeric || isOptionSet) && typeof v === "string") {
 			const num = Number(v);
 			if (!Number.isNaN(num)) return String(num);
 		}

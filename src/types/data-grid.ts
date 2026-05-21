@@ -257,6 +257,6 @@ export type FilterOperator =
 
 export interface FilterValue {
   operator: FilterOperator;
-  value?: string | number | string[];
+  value?: string | number | (string | number)[];
   endValue?: string | number;
 }

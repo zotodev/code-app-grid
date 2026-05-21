@@ -6,8 +6,18 @@ import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
+import { consoleForwardPlugin } from "./plugins/console-forward-plugin";
+
 export default defineConfig({
 	plugins: [
+		consoleForwardPlugin({
+      // Enable console forwarding (default: true in dev mode)
+      enabled: true,
+
+
+      // Which console levels to forward (default: all)
+      levels: ["log", "warn", "error", "info", "debug"],
+    }),
 		tailwindcss(),
 		tanstackRouter({
 			target: "react",

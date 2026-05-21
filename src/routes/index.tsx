@@ -4,7 +4,7 @@ import { investmentColumns } from "@/components/data-grid/columns/investment-col
 import { ServiceDataGrid } from "@/components/data-grid/ServiceDataGrid";
 import { Zap_investmentrecordsService } from "@/generated/services/Zap_investmentrecordsService";
 
-export const Route = createFileRoute("/")(  {
+export const Route = createFileRoute("/")({
 	component: HomePage,
 });
 
