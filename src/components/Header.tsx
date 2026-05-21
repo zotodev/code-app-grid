@@ -1,6 +1,7 @@
-import * as React from "react";
 import { useLocation, useNavigate, useRouter } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, RotateCw, Lock } from "lucide-react";
+import { ArrowLeft, ArrowRight, Lock,RotateCw } from "lucide-react";
+import * as React from "react";
+
 import ThemeToggle from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 

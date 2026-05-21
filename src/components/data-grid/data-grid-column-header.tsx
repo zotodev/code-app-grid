@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import * as React from "react";
 
+import { getColumnVariant } from "@/components/data-grid/data-grid";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -30,7 +31,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { getColumnVariant } from "@/components/data-grid/data-grid";
 import { cn } from "@/lib/utils";
 
 interface DataGridColumnHeaderProps<TData, TValue>

@@ -1,3 +1,5 @@
+import "./index.css";
+
 import {
 	createHashHistory,
 	createRouter,
@@ -5,10 +7,10 @@ import {
 } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+
 import { queryClient } from "./lib/queryClient";
 import { Providers } from "./providers/Providers";
 import { routeTree } from "./routeTree.gen";
-import "./index.css";
 
 const router = createRouter({
 	routeTree,

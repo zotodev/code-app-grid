@@ -4,6 +4,7 @@ import {
 	type Announcements,
 	closestCenter,
 	closestCorners,
+	defaultDropAnimationSideEffects,
 	DndContext,
 	type DndContextProps,
 	type DragEndEvent,
@@ -12,7 +13,6 @@ import {
 	DragOverlay,
 	type DragStartEvent,
 	type DropAnimation,
-	defaultDropAnimationSideEffects,
 	KeyboardSensor,
 	MouseSensor,
 	type ScreenReaderInstructions,
@@ -39,6 +39,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { Slot } from "@radix-ui/react-slot";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+
 import { useComposedRefs } from "@/lib/compose-refs";
 import { cn } from "@/lib/utils";
 
@@ -567,15 +568,15 @@ function SortableOverlay(props: SortableOverlayProps) {
 }
 
 export {
-	SortableContent,
 	SortableContent as Content,
-	SortableItem,
 	SortableItem as Item,
-	SortableItemHandle,
 	SortableItemHandle as ItemHandle,
-	SortableOverlay,
 	SortableOverlay as Overlay,
-	SortableRoot as Sortable,
 	//
 	SortableRoot as Root,
+	SortableRoot as Sortable,
+	SortableContent,
+	SortableItem,
+	SortableItemHandle,
+	SortableOverlay,
 };
