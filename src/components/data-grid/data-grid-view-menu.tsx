@@ -2,7 +2,7 @@
 
 import { useDirection } from "@radix-ui/react-direction";
 import type { Table } from "@tanstack/react-table";
-import { Check, Settings2 } from "lucide-react";
+import { Settings2 } from "lucide-react";
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
@@ -75,19 +75,14 @@ export function DataGridViewMenu<TData>({
               {columns.map((column) => (
                 <CommandItem
                   key={column.id}
+                  data-checked={column.getIsVisible() || undefined}
                   onSelect={() =>
                     column.toggleVisibility(!column.getIsVisible())
                   }
                 >
-                  <span className="truncate">
+                  <span className="min-w-0 flex-1 truncate">
                     {column.columnDef.meta?.label ?? column.id}
                   </span>
-                  <Check
-                    className={cn(
-                      "ms-auto size-4 shrink-0",
-                      column.getIsVisible() ? "opacity-100" : "opacity-0",
-                    )}
-                  />
                 </CommandItem>
               ))}
             </CommandGroup>
