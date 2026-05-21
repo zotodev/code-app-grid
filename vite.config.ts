@@ -15,6 +15,9 @@ export default defineConfig({
 		react(),
 		powerApps(),
 	],
+	server: {
+		port: 3000
+	},
 	resolve: {
 		alias: {
 			"@": path.resolve(__dirname, "./src"),

@@ -10,128 +10,33 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as TabIndexRouteImport } from './routes/tab/index'
-import { Route as OrdersIndexRouteImport } from './routes/orders/index'
-import { Route as CloudFlowIndexRouteImport } from './routes/cloud-flow/index'
-import { Route as ApiIndexRouteImport } from './routes/api/index'
-import { Route as OrdersListRouteImport } from './routes/orders/list'
-import { Route as OrdersCreateRouteImport } from './routes/orders/create'
-import { Route as OrdersOrderIdRouteImport } from './routes/orders/$orderId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TabIndexRoute = TabIndexRouteImport.update({
-  id: '/tab/',
-  path: '/tab/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OrdersIndexRoute = OrdersIndexRouteImport.update({
-  id: '/orders/',
-  path: '/orders/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CloudFlowIndexRoute = CloudFlowIndexRouteImport.update({
-  id: '/cloud-flow/',
-  path: '/cloud-flow/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiIndexRoute = ApiIndexRouteImport.update({
-  id: '/api/',
-  path: '/api/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OrdersListRoute = OrdersListRouteImport.update({
-  id: '/orders/list',
-  path: '/orders/list',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OrdersCreateRoute = OrdersCreateRouteImport.update({
-  id: '/orders/create',
-  path: '/orders/create',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OrdersOrderIdRoute = OrdersOrderIdRouteImport.update({
-  id: '/orders/$orderId',
-  path: '/orders/$orderId',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/orders/$orderId': typeof OrdersOrderIdRoute
-  '/orders/create': typeof OrdersCreateRoute
-  '/orders/list': typeof OrdersListRoute
-  '/api/': typeof ApiIndexRoute
-  '/cloud-flow/': typeof CloudFlowIndexRoute
-  '/orders/': typeof OrdersIndexRoute
-  '/tab/': typeof TabIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/orders/$orderId': typeof OrdersOrderIdRoute
-  '/orders/create': typeof OrdersCreateRoute
-  '/orders/list': typeof OrdersListRoute
-  '/api': typeof ApiIndexRoute
-  '/cloud-flow': typeof CloudFlowIndexRoute
-  '/orders': typeof OrdersIndexRoute
-  '/tab': typeof TabIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/orders/$orderId': typeof OrdersOrderIdRoute
-  '/orders/create': typeof OrdersCreateRoute
-  '/orders/list': typeof OrdersListRoute
-  '/api/': typeof ApiIndexRoute
-  '/cloud-flow/': typeof CloudFlowIndexRoute
-  '/orders/': typeof OrdersIndexRoute
-  '/tab/': typeof TabIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/orders/$orderId'
-    | '/orders/create'
-    | '/orders/list'
-    | '/api/'
-    | '/cloud-flow/'
-    | '/orders/'
-    | '/tab/'
+  fullPaths: '/'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/orders/$orderId'
-    | '/orders/create'
-    | '/orders/list'
-    | '/api'
-    | '/cloud-flow'
-    | '/orders'
-    | '/tab'
-  id:
-    | '__root__'
-    | '/'
-    | '/orders/$orderId'
-    | '/orders/create'
-    | '/orders/list'
-    | '/api/'
-    | '/cloud-flow/'
-    | '/orders/'
-    | '/tab/'
+  to: '/'
+  id: '__root__' | '/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  OrdersOrderIdRoute: typeof OrdersOrderIdRoute
-  OrdersCreateRoute: typeof OrdersCreateRoute
-  OrdersListRoute: typeof OrdersListRoute
-  ApiIndexRoute: typeof ApiIndexRoute
-  CloudFlowIndexRoute: typeof CloudFlowIndexRoute
-  OrdersIndexRoute: typeof OrdersIndexRoute
-  TabIndexRoute: typeof TabIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -143,67 +48,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/tab/': {
-      id: '/tab/'
-      path: '/tab'
-      fullPath: '/tab/'
-      preLoaderRoute: typeof TabIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/orders/': {
-      id: '/orders/'
-      path: '/orders'
-      fullPath: '/orders/'
-      preLoaderRoute: typeof OrdersIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cloud-flow/': {
-      id: '/cloud-flow/'
-      path: '/cloud-flow'
-      fullPath: '/cloud-flow/'
-      preLoaderRoute: typeof CloudFlowIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/': {
-      id: '/api/'
-      path: '/api'
-      fullPath: '/api/'
-      preLoaderRoute: typeof ApiIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/orders/list': {
-      id: '/orders/list'
-      path: '/orders/list'
-      fullPath: '/orders/list'
-      preLoaderRoute: typeof OrdersListRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/orders/create': {
-      id: '/orders/create'
-      path: '/orders/create'
-      fullPath: '/orders/create'
-      preLoaderRoute: typeof OrdersCreateRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/orders/$orderId': {
-      id: '/orders/$orderId'
-      path: '/orders/$orderId'
-      fullPath: '/orders/$orderId'
-      preLoaderRoute: typeof OrdersOrderIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  OrdersOrderIdRoute: OrdersOrderIdRoute,
-  OrdersCreateRoute: OrdersCreateRoute,
-  OrdersListRoute: OrdersListRoute,
-  ApiIndexRoute: ApiIndexRoute,
-  CloudFlowIndexRoute: CloudFlowIndexRoute,
-  OrdersIndexRoute: OrdersIndexRoute,
-  TabIndexRoute: TabIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

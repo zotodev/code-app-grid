@@ -6,10 +6,7 @@ import {
 	useLocation,
 	useRouter,
 } from "@tanstack/react-router";
-import { NuqsAdapter } from "nuqs/adapters/tanstack-router";
-import { AppSidebar } from "@/components/app-sidebar";
 import { Header } from "@/components/Header";
-import { SidebarProvider } from "@/components/ui/sidebar";
 
 export const Route = createRootRouteWithContext<{
 	queryClient: QueryClient;
@@ -21,20 +18,14 @@ export const Route = createRootRouteWithContext<{
 
 function RootLayout() {
 	return (
-		<div className="flex h-screen">
-			<NuqsAdapter>
-				<SidebarProvider>
-					<AppSidebar />
-					<div className="flex min-w-0 flex-1 flex-col">
-						<Header />
-						<div className="pt-14">
-							<main className="h-full">
-								<Outlet />
-							</main>
-						</div>
-					</div>
-				</SidebarProvider>
-			</NuqsAdapter>
+		<div className="flex flex-col min-h-screen bg-background text-foreground antialiased selection:bg-primary/20">
+			{/* Sticky Chrome-style browser header */}
+			<Header />
+
+			{/* Main viewport */}
+			<main className="flex-1 w-full max-w-full overflow-x-hidden flex flex-col">
+				<Outlet />
+			</main>
 		</div>
 	);
 }
@@ -69,3 +60,5 @@ function GlobalError({ error }: { error: Error }) {
 		</div>
 	);
 }
+
+

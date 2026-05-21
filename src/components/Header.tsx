@@ -1,67 +1,110 @@
-"use client";
-
-import { ChevronDown, CreditCard, Plus, Receipt } from "lucide-react";
-
+import * as React from "react";
+import { useLocation, useNavigate, useRouter } from "@tanstack/react-router";
+import { ArrowLeft, ArrowRight, RotateCw, Lock } from "lucide-react";
+import ThemeToggle from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Separator } from "@/components/ui/separator";
-import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 
 export function Header() {
-	const { open } = useSidebar();
+	const location = useLocation();
+	const navigate = useNavigate();
+	const router = useRouter();
+
+	const [addressInput, setAddressInput] = React.useState(location.pathname);
+	const [isPending, setIsPending] = React.useState(false);
+
+	// Sync address bar input with the active location path
+	React.useEffect(() => {
+		setAddressInput(location.pathname);
+	}, [location.pathname]);
+
+	const handleNavigate = (path: string) => {
+		let cleanPath = path.trim();
+		if (!cleanPath) return;
+
+		// Normalize cleanPath to start with a slash
+		if (!cleanPath.startsWith("/")) {
+			cleanPath = "/" + cleanPath;
+		}
+
+		navigate({ to: cleanPath }).catch((err) => {
+			console.error("Navigation error:", err);
+		});
+	};
+
+	const onKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (e.key === "Enter") {
+			handleNavigate(addressInput);
+		}
+	};
+
+	const triggerReload = () => {
+		setIsPending(true);
+		router.invalidate();
+		// Simulate loading animation finish
+		setTimeout(() => setIsPending(false), 500);
+	};
 
 	return (
-		<header
-			className={`fixed flex h-14 shrink-0 items-center ${
-				open
-					? "md:w-[calc(100%-var(--sidebar-width))]"
-					: "md:w-[calc(100%-var(--sidebar-width-icon))]"
-			} z-10 w-full justify-between gap-2 border-border border-b bg-background px-2 transition-[width] ease-linear`}
-		>
-			<div className="flex items-center gap-2 px-4">
-				<SidebarTrigger className="-ml-1" />
-				<Separator className="mr-2 h-4" orientation="vertical" />
+		<header className="sticky top-0 z-50 flex w-full items-center justify-between border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/65 px-4 py-2 gap-3 h-14 select-none">
+			{/* Left: Standard Navigation controls */}
+			<div className="flex items-center gap-1">
+				<Button
+					variant="ghost"
+					size="icon"
+					className="h-8 w-8 rounded-full"
+					onClick={() => window.history.back()}
+					title="Go back"
+				>
+					<ArrowLeft className="h-4 w-4" />
+				</Button>
+				<Button
+					variant="ghost"
+					size="icon"
+					className="h-8 w-8 rounded-full"
+					onClick={() => window.history.forward()}
+					title="Go forward"
+				>
+					<ArrowRight className="h-4 w-4" />
+				</Button>
+				<Button
+					variant="ghost"
+					size="icon"
+					className="h-8 w-8 rounded-full"
+					onClick={triggerReload}
+					title="Reload this page"
+				>
+					<RotateCw className={`h-4 w-4 ${isPending ? "animate-spin" : ""}`} />
+				</Button>
 			</div>
 
-			<div className="flex h-14 items-center gap-2 px-4">
-				<AddButton />
+			{/* Center: Address Bar (Omnibox) */}
+			<div className="flex flex-1 items-center bg-muted/40 hover:bg-muted/70 focus-within:bg-background focus-within:ring-1 focus-within:ring-ring border px-3 py-1 gap-2 transition-all h-9">
+				<Lock className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+				<div className="flex items-center text-xs text-muted-foreground select-none shrink-0 font-mono">
+					https://localhost:5173
+				</div>
+				<input
+					type="text"
+					className="flex-1 bg-transparent border-none outline-none font-mono text-sm h-full w-full py-0 text-foreground"
+					value={addressInput}
+					onChange={(e) => setAddressInput(e.target.value)}
+					onKeyDown={onKeyPress}
+					placeholder="Type a path to navigate..."
+				/>
+				<Button
+					variant="outline"
+					size="sm"
+					onClick={() => handleNavigate(addressInput)}
+					className="h-6 px-3 text-[11px] shrink-0 font-medium hover:bg-primary hover:text-primary-foreground border-muted-foreground/30"
+				>
+					Go
+				</Button>
+			</div>
+
+			{/* Right: Theme Switcher */}
+			<div className="flex items-center gap-2">
+				<ThemeToggle />
 			</div>
 		</header>
-	);
-}
-
-function AddButton() {
-	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger asChild className="focus-visible:ring-0">
-				<Button className="px-0" variant="outline">
-					<div className="flex h-full items-center">
-						<div className="flex items-center justify-center gap-2 px-3 py-2">
-							<Plus className="h-4 w-4" />
-							<span>Add</span>
-						</div>
-						<Separator orientation="vertical" />
-						<div className="flex items-center justify-center px-3 py-2">
-							<ChevronDown className="h-4 w-4" />
-						</div>
-					</div>
-				</Button>
-			</DropdownMenuTrigger>
-			<DropdownMenuContent align="end" className="w-48">
-				<DropdownMenuItem>
-					<Receipt className="mr-2 h-4 w-4" />
-					Add Receipt
-				</DropdownMenuItem>
-				<DropdownMenuItem>
-					<CreditCard className="mr-2 h-4 w-4" />
-					Add Payment
-				</DropdownMenuItem>
-			</DropdownMenuContent>
-		</DropdownMenu>
 	);
 }
