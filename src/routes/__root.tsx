@@ -26,6 +26,7 @@ function RootLayout() {
 			{/* Main viewport */}
 			<main className="flex-1 w-full max-w-full overflow-x-hidden flex flex-col">
 				<Outlet />
+
 			</main>
 		</div>
 	);

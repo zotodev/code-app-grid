@@ -1,5 +1,6 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useLocation, useNavigate, useRouter } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, Lock,RotateCw } from "lucide-react";
+import { ArrowLeft, ArrowRight, Lock, RotateCw } from "lucide-react";
 import * as React from "react";
 
 import ThemeToggle from "@/components/theme-toggle";
@@ -9,12 +10,14 @@ export function Header() {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const router = useRouter();
+	const queryClient = useQueryClient();
 
 	const [addressInput, setAddressInput] = React.useState(location.pathname);
 	const [isPending, setIsPending] = React.useState(false);
 
 	// Sync address bar input with the active location path
 	React.useEffect(() => {
+		// eslint-disable-next-line react-hooks/set-state-in-effect
 		setAddressInput(location.pathname);
 	}, [location.pathname]);
 
@@ -40,6 +43,9 @@ export function Header() {
 
 	const triggerReload = () => {
 		setIsPending(true);
+		queryClient.invalidateQueries().catch((err) => {
+			console.error("Error invalidating queries:", err);
+		});
 		router.invalidate();
 		// Simulate loading animation finish
 		setTimeout(() => setIsPending(false), 500);

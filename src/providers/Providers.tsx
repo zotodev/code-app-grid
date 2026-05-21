@@ -1,4 +1,5 @@
 import { QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ThemeProvider } from "next-themes";
 import type { ReactNode } from "react";
 
@@ -12,16 +13,19 @@ interface ProvidersProps {
 
 export function Providers({ children }: ProvidersProps) {
 	return (
-		<QueryClientProvider client={queryClient}>
-			<ThemeProvider
-				attribute="class"
-				defaultTheme="system"
-				enableSystem
-				disableTransitionOnChange
-			>
-				<TooltipProvider>{children}</TooltipProvider>
-				<Toaster richColors closeButton />
-			</ThemeProvider>
-		</QueryClientProvider>
+		<>
+			<QueryClientProvider client={queryClient}>
+				<ThemeProvider
+					attribute="class"
+					defaultTheme="system"
+					enableSystem
+					disableTransitionOnChange
+				>
+					<TooltipProvider>{children}</TooltipProvider>
+					<Toaster richColors closeButton />
+					<ReactQueryDevtools initialIsOpen={false} />
+				</ThemeProvider>
+			</QueryClientProvider>
+		</>
 	);
 }
