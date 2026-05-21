@@ -5,6 +5,13 @@
  */
 
 export const dataSourcesInfo = {
+  "zap_investmentrecords": {
+    "tableId": "",
+    "version": "",
+    "primaryKey": "zap_investmentrecordid",
+    "dataSourceType": "Dataverse",
+    "apis": {}
+  },
   "zap_todo1s": {
     "tableId": "",
     "version": "",

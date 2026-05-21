@@ -5,7 +5,9 @@
 
 // Models
 export * as CommonModels from './models/CommonModels';
+export * as Zap_investmentrecordsModel from './models/Zap_investmentrecordsModel';
 export * as Zap_todo1sModel from './models/Zap_todo1sModel';
 
 // Services
+export * from './services/Zap_investmentrecordsService';
 export * from './services/Zap_todo1sService';

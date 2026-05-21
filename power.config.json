@@ -17,6 +17,11 @@
           "entitySetName": "zap_todo1s",
           "logicalName": "zap_todo1",
           "isHidden": false
+        },
+        "investmentrecord": {
+          "entitySetName": "zap_investmentrecords",
+          "logicalName": "zap_investmentrecord",
+          "isHidden": false
         }
       },
       "environmentVariableName": ""
