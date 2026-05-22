@@ -14,12 +14,12 @@ import { useServiceDataGrid } from "@/hooks/use-service-data-grid";
 import { cn } from "@/lib/utils";
 import type { ServiceDataGridConfig } from "@/types/service-data-grid";
 
-interface ServiceDataGridProps<T> {
+interface ServiceDataGridProps<T extends Record<string, unknown>> {
 	config: ServiceDataGridConfig<T>;
 	className?: string;
 }
 
-export function ServiceDataGrid<T>({
+export function ServiceDataGrid<T extends Record<string, unknown>>({
 	config,
 	className,
 }: ServiceDataGridProps<T>) {
@@ -33,6 +33,7 @@ export function ServiceDataGrid<T>({
 		isLoading,
 		isError,
 		error,
+		isSaving: _isSaving,
 		...dataGridProps
 	} = useServiceDataGrid(config);
 

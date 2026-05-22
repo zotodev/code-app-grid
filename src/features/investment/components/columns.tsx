@@ -1,12 +1,9 @@
 import type { ColumnDef } from "@tanstack/react-table";
 
-import { getFilterFn } from "@/lib/data-grid-filters";
 import type { Zap_investmentrecords } from "@/generated/models/Zap_investmentrecordsModel";
 import { Zap_investmentrecordszap_stocktickersymbol } from "@/generated/models/Zap_investmentrecordsModel";
+import { getFilterFn } from "@/lib/data-grid-filters";
 
-/**
- * Stock ticker options derived from the generated enum.
- */
 const tickerOptions = Object.entries(
 	Zap_investmentrecordszap_stocktickersymbol,
 ).map(([key, label]) => ({
@@ -14,13 +11,7 @@ const tickerOptions = Object.entries(
 	value: String(key),
 }));
 
-/**
- * Column definitions for the Zap_investmentrecords entity.
- *
- * Each column maps a model field to a DiceUI cell variant
- * with appropriate label, size, and filtering support.
- */
-export const investmentColumns: ColumnDef<Zap_investmentrecords, unknown>[] = [
+export const columns: ColumnDef<Zap_investmentrecords, unknown>[] = [
 	{
 		accessorKey: "zap_name",
 		header: "Name",
@@ -46,8 +37,8 @@ export const investmentColumns: ColumnDef<Zap_investmentrecords, unknown>[] = [
 	{
 		accessorKey: "zap_stocktickersymbol",
 		header: "Ticker",
-		size: 130,
-		minSize: 90,
+		size: 200,
+		minSize: 130,
 		meta: {
 			label: "Ticker Symbol",
 			cell: {

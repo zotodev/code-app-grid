@@ -1,12 +1,9 @@
 import type { ColumnDef } from "@tanstack/react-table";
 
-import { getFilterFn } from "@/lib/data-grid-filters";
 import type { Zap_todo1s } from "@/generated/models/Zap_todo1sModel";
 import { Zap_todo1szap_status } from "@/generated/models/Zap_todo1sModel";
+import { getFilterFn } from "@/lib/data-grid-filters";
 
-/**
- * Status options derived from the generated enum.
- */
 const statusOptions = Object.entries(Zap_todo1szap_status).map(
 	([key, label]) => ({
 		label,
@@ -14,13 +11,7 @@ const statusOptions = Object.entries(Zap_todo1szap_status).map(
 	}),
 );
 
-/**
- * Column definitions for the Zap_todo1s (Todos) entity.
- *
- * Each column maps a model field to a DiceUI cell variant
- * with appropriate label, size, and filtering support.
- */
-export const todoColumns: ColumnDef<Zap_todo1s, unknown>[] = [
+export const columns: ColumnDef<Zap_todo1s, unknown>[] = [
 	{
 		accessorKey: "zap_taskname",
 		header: "Task Name",
