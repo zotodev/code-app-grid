@@ -115,7 +115,7 @@ export function InvestmentRecordsPage({ readOnly = true }: { readOnly?: boolean 
 
 ## Initial column visibility
 
-Use `initialColumnVisibility` to hide columns when the grid first loads. Keys are the column `accessorKey` (OData field name); set to `false` to hide.
+Use `initialColumnVisibility` to hide columns when the grid first loads. Keys are the column `accessorKey` (OData field name) or column `id` for action columns; set to `false` to hide.
 
 ```tsx
 <DataverseGrid<Zap_investmentrecords>
@@ -125,8 +125,8 @@ Use `initialColumnVisibility` to hide columns when the grid first loads. Keys ar
     columns,
     idField: "zap_investmentrecordid",
     initialColumnVisibility: {
-      zap_websiteurl: false,     // hidden on load
-      zap_phonenumber: false,    // hidden on load
+      zap_budgetallocated: false,  // hidden on load
+      zap_investorwebsite: false,  // hidden on load
       // omit columns that should be visible — default is visible
     },
   }}
@@ -134,6 +134,70 @@ Use `initialColumnVisibility` to hide columns when the grid first loads. Keys ar
 ```
 
 The user can still toggle hidden columns back on via the **View** menu in the toolbar. Omit a column from the map (or set to `true`) to keep it visible.
+
+## Navigate / action column
+
+Add a per-row action column (e.g. open record) in `columns.tsx`. Use a function `header` so the grid renders your custom `cell` directly (same pattern as the select column). Do **not** set `accessorKey` — action columns are not data fields.
+
+**Reference:** `src/features/investment/components/columns.tsx`
+
+```tsx
+import { ExternalLink } from "lucide-react";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+
+export const NAVIGATE_COLUMN_ID = "navigate";
+
+// append to columns array:
+{
+  id: NAVIGATE_COLUMN_ID,
+  header: () => <span className="sr-only">Open</span>,
+  cell: ({ row }) => (
+    <div className="flex size-full items-center justify-center">
+      <Button
+        variant="ghost"
+        size="icon-sm"
+        aria-label="Open record"
+        onClick={(event) => {
+          event.stopPropagation();
+          toast.info(`Row ID: ${row.id}`);
+        }}
+      >
+        <ExternalLink />
+      </Button>
+    </div>
+  ),
+  size: 48,
+  minSize: 48,
+  enableSorting: false,
+  enableColumnFilter: false,
+  enableHiding: false,
+  enableResizing: false,
+  meta: { label: "Open" },
+},
+```
+
+Pin the column to the far right in `data-grid.tsx`:
+
+```tsx
+import { columns, NAVIGATE_COLUMN_ID } from "./columns";
+
+<DataverseGrid
+  config={{
+    columns,
+    initialColumnPinning: { right: [NAVIGATE_COLUMN_ID] },
+    // ...
+  }}
+/>
+```
+
+Rules:
+- Export a shared column id constant (e.g. `NAVIGATE_COLUMN_ID`) for use in pinning config
+- Call `event.stopPropagation()` on the button click so the grid does not treat it as cell focus/selection
+- `row.id` is the entity primary key (`idField` from config)
+- Disable sort, filter, hide, and resize on action columns
+- Replace the toast handler with navigation when wiring a real route
 
 ## Initial column pinning
 
@@ -148,7 +212,7 @@ Use `initialColumnPinning` to pin columns to the left or right edge when the gri
     idField: "zap_investmentrecordid",
     initialColumnPinning: {
       left: ["zap_name"],              // pinned to left
-      right: ["zap_quantity"],         // pinned to right
+      right: [NAVIGATE_COLUMN_ID],     // pinned to right (action column id)
     },
   }}
 />

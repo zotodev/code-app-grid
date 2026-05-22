@@ -130,6 +130,60 @@ Default: sorting and filtering enabled. Disable for computed/lookup columns:
 }
 ```
 
+## Navigate / action column
+
+Per-row icon buttons (open record, external link, etc.) live in `columns.tsx` as a column **without** `accessorKey`. Use a function `header` so the custom `cell` renders outside the default cell editor.
+
+```tsx
+import { ExternalLink } from "lucide-react";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+
+export const NAVIGATE_COLUMN_ID = "navigate";
+
+{
+  id: NAVIGATE_COLUMN_ID,
+  header: () => <span className="sr-only">Open</span>,
+  cell: ({ row }) => (
+    <div className="flex size-full items-center justify-center">
+      <Button
+        variant="ghost"
+        size="icon-sm"
+        aria-label="Open record"
+        onClick={(event) => {
+          event.stopPropagation();
+          toast.info(`Row ID: ${row.id}`);
+        }}
+      >
+        <ExternalLink />
+      </Button>
+    </div>
+  ),
+  size: 48,
+  minSize: 48,
+  enableSorting: false,
+  enableColumnFilter: false,
+  enableHiding: false,
+  enableResizing: false,
+  meta: { label: "Open" },
+},
+```
+
+Pin to the far right in `data-grid.tsx` via `initialColumnPinning: { right: [NAVIGATE_COLUMN_ID] }`.
+
+## Hide columns on load
+
+In `data-grid.tsx`, pass `initialColumnVisibility` with `accessorKey` → `false` for each hidden column:
+
+```tsx
+initialColumnVisibility: {
+  zap_budgetallocated: false,
+},
+```
+
+Users can re-show hidden columns from the toolbar **View** menu.
+
 ## Existing references
 
 - Full entity example: `src/features/investment/components/columns.tsx`

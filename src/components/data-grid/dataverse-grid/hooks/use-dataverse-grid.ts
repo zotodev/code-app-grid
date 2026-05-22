@@ -11,8 +11,8 @@ import { toast } from "sonner";
 
 import { getDataGridSelectColumn } from "../../data-grid-select-column";
 import { useDataGrid } from "../../hooks/use-data-grid";
-import type { DataverseGridConfig } from "../types/dataverse-grid-config";
 import { filtersToOData, sortingToOData } from "../lib/odata-filters";
+import type { DataverseGridConfig } from "../types/dataverse-grid-config";
 
 const DEFAULT_PAGE_SIZE = 50;
 
@@ -28,7 +28,7 @@ function getUpdatableFieldKeys<T>(columns: ColumnDef<T, unknown>[]): string[] {
 			if ("accessorKey" in column && column.accessorKey) {
 				return String(column.accessorKey);
 			}
-			return column.id;
+			return undefined;
 		})
 		.filter((field): field is string => Boolean(field));
 }
@@ -135,6 +135,8 @@ export function useDataverseGrid<T extends object>(
 		idField,
 		readOnly = true,
 		enableRowSelection = true,
+		initialColumnPinning,
+		initialColumnVisibility,
 	} = config;
 
 	const queryClient = useQueryClient();
@@ -271,10 +273,22 @@ export function useDataverseGrid<T extends object>(
 	}, [columns, enableRowSelection]);
 
 	// ─── Wire into DiceUI useDataGrid ───
+	const initialState = useMemo(() => {
+		if (!initialColumnPinning && !initialColumnVisibility) return undefined;
+
+		return {
+			...(initialColumnPinning ? { columnPinning: initialColumnPinning } : {}),
+			...(initialColumnVisibility
+				? { columnVisibility: initialColumnVisibility }
+				: {}),
+		};
+	}, [initialColumnPinning, initialColumnVisibility]);
+
 	const dataGrid = useDataGrid<T>({
 		data,
 		columns: tableColumns,
 		enableRowSelection,
+		initialState,
 		state: {
 			sorting,
 			columnFilters,

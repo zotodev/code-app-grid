@@ -38,4 +38,11 @@ export interface DataverseGridConfig<T extends object> {
 	readOnly?: boolean;
 	/** When true, prepends a checkbox column for row selection. Default: true */
 	enableRowSelection?: boolean;
+	/** Pin columns to the left or right edge on initial load */
+	initialColumnPinning?: {
+		left?: string[];
+		right?: string[];
+	};
+	/** Hide columns on initial load. Keys are accessorKey or column id; set to false to hide */
+	initialColumnVisibility?: Record<string, boolean>;
 }

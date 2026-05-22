@@ -1,8 +1,13 @@
 import type { ColumnDef } from "@tanstack/react-table";
+import { ExternalLink } from "lucide-react";
+import { toast } from "sonner";
 
 import { getFilterFn } from "@/components/data-grid";
+import { Button } from "@/components/ui/button";
 import type { Zap_investmentrecords } from "@/generated/models/Zap_investmentrecordsModel";
 import { Zap_investmentrecordszap_stocktickersymbol } from "@/generated/models/Zap_investmentrecordsModel";
+
+export const NAVIGATE_COLUMN_ID = "navigate";
 
 const tickerOptions = Object.entries(
 	Zap_investmentrecordszap_stocktickersymbol,
@@ -77,6 +82,7 @@ export const columns: ColumnDef<Zap_investmentrecords, unknown>[] = [
 			}).format(value);
 		},
 		filterFn: getFilterFn(),
+		
 	},
 	{
 		accessorKey: "zap_quantityowned",
@@ -214,6 +220,34 @@ export const columns: ColumnDef<Zap_investmentrecords, unknown>[] = [
 		meta: {
 			label: "Owner",
 			cell: { variant: "short-text" },
+		},
+	},
+	{
+		id: NAVIGATE_COLUMN_ID,
+		header: () => <span className="sr-only">Open</span>,
+		cell: ({ row }) => (
+			<div className="flex size-full items-center justify-center">
+				<Button
+					variant="ghost"
+					size="icon-sm"
+					aria-label="Open record"
+					onClick={(event) => {
+						event.stopPropagation();
+						toast.info(`Row ID: ${row.id}`);
+					}}
+				>
+					<ExternalLink />
+				</Button>
+			</div>
+		),
+		size: 48,
+		minSize: 48,
+		enableSorting: false,
+		enableColumnFilter: false,
+		enableHiding: false,
+		enableResizing: false,
+		meta: {
+			label: "Open",
 		},
 	},
 ];

@@ -5,7 +5,7 @@ import {
 import type { Zap_investmentrecords } from "@/generated/models/Zap_investmentrecordsModel";
 import { Zap_investmentrecordsService } from "@/generated/services/Zap_investmentrecordsService";
 
-import { columns } from "./columns";
+import { columns, NAVIGATE_COLUMN_ID } from "./columns";
 
 interface InvestmentDataGridProps {
 	readOnly?: boolean;
@@ -47,6 +47,12 @@ export function InvestmentDataGrid({
 				idField: "zap_investmentrecordid",
 				defaultSort: [{ id: "createdon", desc: true }],
 				readOnly,
+				initialColumnPinning: {
+					right: [NAVIGATE_COLUMN_ID],
+				},
+				initialColumnVisibility: {
+					zap_budgetallocated: false,
+				},
 			}}
 		/>
 	);
