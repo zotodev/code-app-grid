@@ -1,18 +1,18 @@
 import { useDirection } from "@radix-ui/react-direction";
 import {
-    type ColumnDef,
-    type ColumnFiltersState,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getSortedRowModel,
-    type Row,
-    type RowSelectionState,
-    type SortingState,
-    type TableMeta,
-    type TableOptions,
-    type TableState,
-    type Updater,
-    useReactTable,
+  type ColumnDef,
+  type ColumnFiltersState,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
+  type Row,
+  type RowSelectionState,
+  type SortingState,
+  type TableMeta,
+  type TableOptions,
+  type TableState,
+  type Updater,
+  useReactTable,
 } from "@tanstack/react-table";
 import { useVirtualizer, type Virtualizer } from "@tanstack/react-virtual";
 import * as React from "react";
@@ -21,29 +21,30 @@ import { toast } from "sonner";
 import { useAsRef } from "@/hooks/use-as-ref";
 import { useIsomorphicLayoutEffect } from "@/hooks/use-isomorphic-layout-effect";
 import { useLazyRef } from "@/hooks/use-lazy-ref";
+
 import {
-    getCellKey,
-    getEmptyCellValue,
-    getIsFileCellData,
-    getIsInPopover,
-    getRowHeightValue,
-    getScrollDirection,
-    matchSelectOption,
-    parseCellKey,
-    parseTsv,
-    scrollCellIntoView,
+  getCellKey,
+  getEmptyCellValue,
+  getIsFileCellData,
+  getIsInPopover,
+  getRowHeightValue,
+  getScrollDirection,
+  matchSelectOption,
+  parseCellKey,
+  parseTsv,
+  scrollCellIntoView,
 } from "../lib/data-grid";
 import type {
-    CellPosition,
-    CellUpdate,
-    ContextMenuState,
-    Direction,
-    FileCellData,
-    NavigationDirection,
-    PasteDialogState,
-    RowHeightValue,
-    SearchState,
-    SelectionState,
+  CellPosition,
+  CellUpdate,
+  ContextMenuState,
+  Direction,
+  FileCellData,
+  NavigationDirection,
+  PasteDialogState,
+  RowHeightValue,
+  SearchState,
+  SelectionState,
 } from "../types/data-grid";
 
 const DEFAULT_ROW_HEIGHT = "short";
@@ -151,6 +152,7 @@ function useDataGrid<TData>({
   initialState,
   ...props
 }: UseDataGridProps<TData>) {
+  "use no memo";
   const dir = useDirection(dirProp);
   const dataGridRef = React.useRef<HTMLDivElement>(null);
   const tableRef = React.useRef<ReturnType<typeof useReactTable<TData>>>(null);
@@ -2196,7 +2198,7 @@ function useDataGrid<TData>({
       colSizes[`--col-${header.column.id}-size`] = header.column.getSize();
     }
     return colSizes;
-  }, [table.getState().columnSizingInfo, table.getState().columnSizing]);
+  }, [table.getState().columnSizingInfo, table.getState().columnSizing, table.getState().columnVisibility]);
 
   const isFirefox = React.useSyncExternalStore(
     React.useCallback(() => () => {}, []),
