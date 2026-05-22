@@ -16,6 +16,7 @@ export function TodosDataGrid({
 	return (
 		<ServiceDataGrid<Zap_todo1s>
 			className={className}
+			title="Active Todos"
 			config={{
 				queryKey: readOnly ? "todos" : "todos-editable",
 				service: Zap_todo1sService,

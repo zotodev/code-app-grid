@@ -8,7 +8,7 @@ import type { IGetAllOptions } from "@/generated/models/CommonModels";
  * to be used with ServiceDataGrid. All generated services already
  * conform to this (e.g. Zap_todo1sService, Zap_investmentrecordsService).
  */
-export interface DataService<T extends Record<string, unknown>> {
+export interface DataService<T extends object> {
 	getAll(options?: IGetAllOptions): Promise<IOperationResult<T[]>>;
 	update?(
 		id: string,
@@ -21,7 +21,7 @@ export interface DataService<T extends Record<string, unknown>> {
  * Pass one of these per entity to get a fully-functional data grid
  * with infinite scroll, server-side sorting and filtering.
  */
-export interface ServiceDataGridConfig<T extends Record<string, unknown>> {
+export interface ServiceDataGridConfig<T extends object> {
 	/** Unique query key prefix for React Query cache isolation */
 	queryKey: string;
 	/** The service class — must expose a static `getAll` method */

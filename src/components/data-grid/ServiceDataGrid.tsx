@@ -14,14 +14,16 @@ import { useServiceDataGrid } from "@/hooks/use-service-data-grid";
 import { cn } from "@/lib/utils";
 import type { ServiceDataGridConfig } from "@/types/service-data-grid";
 
-interface ServiceDataGridProps<T extends Record<string, unknown>> {
+interface ServiceDataGridProps<T extends object> {
 	config: ServiceDataGridConfig<T>;
 	className?: string;
+	title?: string;
 }
 
-export function ServiceDataGrid<T extends Record<string, unknown>>({
+export function ServiceDataGrid<T extends object>({
 	config,
 	className,
+	title,
 }: ServiceDataGridProps<T>) {
 	const {
 		query,
@@ -106,6 +108,7 @@ export function ServiceDataGrid<T extends Record<string, unknown>>({
 					table={dataGridProps.table}
 					totalCount={totalCount}
 					dataCount={0}
+					title={title}
 				/>
 				<div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed p-12 text-muted-foreground">
 					<p className="text-sm">No records found</p>
@@ -121,26 +124,39 @@ export function ServiceDataGrid<T extends Record<string, unknown>>({
 		<div
 			className={cn("flex flex-1 flex-col gap-2 min-h-0", className)}
 		>
-			<ServiceDataGridToolbar
-				table={dataGridProps.table}
-				totalCount={totalCount}
-				dataCount={data.length}
-				isLoading={isLoading}
-				isFetchingNextPage={isFetchingNextPage}
-			/>
+		<ServiceDataGridToolbar
+			table={dataGridProps.table}
+			totalCount={totalCount}
+			dataCount={data.length}
+			isLoading={isLoading}
+			isFetchingNextPage={isFetchingNextPage}
+			title={title}
+		/>
 
-			<DataGrid
-				{...dataGridProps}
-				sentinelRef={sentinelRef}
-				className="flex-1 min-h-0"
-			/>
+		<DataGrid
+			{...dataGridProps}
+			sentinelRef={sentinelRef}
+			className="flex-1 min-h-0"
+		/>
 
+		{/* Bottom footer: row count on left, loading indicator on right */}
+		<div className="flex items-center justify-between text-sm text-muted-foreground">
+			<span>
+				Rows:{" "}
+				{isFetchingNextPage
+					? `${data.length.toLocaleString()}…`
+					: data.length.toLocaleString()}
+				{totalCount !== undefined &&
+					totalCount !== data.length &&
+					` of ${totalCount.toLocaleString()}`}
+			</span>
 			{isFetchingNextPage && (
-				<div className="flex items-center justify-center gap-2 py-3 text-sm text-muted-foreground">
-					<Loader2 className="size-4 animate-spin" />
-					<span>Loading more records…</span>
+				<div className="flex items-center gap-1.5">
+					<Loader2 className="size-3.5 animate-spin" />
+					<span>Loading more…</span>
 				</div>
 			)}
+		</div>
 		</div>
 	);
 }

@@ -123,7 +123,7 @@ function patchInfiniteQueryCache<T extends Record<string, unknown>>(
  * 5. Configures useDataGrid with manualSorting + manualFiltering (server-side)
  * 6. Persists cell edits via service.update when readOnly is false
  */
-export function useServiceDataGrid<T extends Record<string, unknown>>(
+export function useServiceDataGrid<T extends object>(
 	config: ServiceDataGridConfig<T>,
 ) {
 	const {

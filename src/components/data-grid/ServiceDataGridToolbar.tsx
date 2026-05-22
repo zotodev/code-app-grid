@@ -17,15 +17,17 @@ interface ServiceDataGridToolbarProps<TData> {
 	isLoading?: boolean;
 	isFetchingNextPage?: boolean;
 	className?: string;
+	title?: string;
 }
 
 export function ServiceDataGridToolbar<TData>({
 	table,
-	totalCount,
-	dataCount,
+	totalCount: _totalCount,
+	dataCount: _dataCount,
 	isLoading,
 	isFetchingNextPage,
 	className,
+	title,
 }: ServiceDataGridToolbarProps<TData>) {
 	const selectedRowCount = table.getFilteredSelectedRowModel().rows.length;
 
@@ -33,27 +35,19 @@ export function ServiceDataGridToolbar<TData>({
 		<div
 			data-slot="service-grid-toolbar"
 			className={cn(
-				"flex flex-wrap items-center gap-2",
+				"flex items-center justify-between gap-2",
 				className,
 			)}
 		>
-			{/* Filter menu */}
-			<DataGridFilterMenu table={table} />
+			{/* Left: title */}
+			{title ? (
+				<span className="text-sm font-semibold text-foreground">{title}</span>
+			) : (
+				<div />
+			)}
 
-			{/* Sort menu */}
-			<DataGridSortMenu table={table} />
-
-			{/* Row height selector */}
-			<DataGridRowHeightMenu table={table} />
-
-			{/* View / column visibility */}
-			<DataGridViewMenu table={table} />
-
-			{/* Spacer */}
-			<div className="flex-1" />
-
-			{/* Record count + loading indicator */}
-			<div className="flex items-center gap-2 text-sm text-muted-foreground">
+			{/* Right: controls + badges */}
+			<div className="flex flex-wrap items-center gap-2">
 				{selectedRowCount > 0 && (
 					<Badge variant="secondary" className="text-xs font-normal">
 						{selectedRowCount.toLocaleString()} selected
@@ -62,17 +56,18 @@ export function ServiceDataGridToolbar<TData>({
 				{(isLoading || isFetchingNextPage) && (
 					<Loader2 className="size-3.5 animate-spin" />
 				)}
-				<span>
-					{dataCount.toLocaleString()}
-					{totalCount !== undefined &&
-						` of ${totalCount.toLocaleString()}`}{" "}
-					records
-				</span>
-				{isFetchingNextPage && (
-					<Badge variant="secondary" className="text-xs font-normal">
-						Loading more…
-					</Badge>
-				)}
+
+				{/* Filter menu */}
+				<DataGridFilterMenu table={table} />
+
+				{/* Sort menu */}
+				<DataGridSortMenu table={table} />
+
+				{/* Row height selector */}
+				<DataGridRowHeightMenu table={table} />
+
+				{/* View / column visibility */}
+				<DataGridViewMenu table={table} />
 			</div>
 		</div>
 	);

@@ -16,6 +16,7 @@ export function InvestmentDataGrid({
 	return (
 		<ServiceDataGrid<Zap_investmentrecords>
 			className={className}
+			title="Active Investment Record"
 			config={{
 				queryKey: readOnly ? "investments" : "investments-editable",
 				service: Zap_investmentrecordsService,
