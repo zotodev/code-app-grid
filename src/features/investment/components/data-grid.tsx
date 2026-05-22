@@ -1,5 +1,7 @@
-import { ServiceDataGrid } from "@/components/data-grid/ServiceDataGrid";
-import type { GridAction } from "@/components/data-grid/ServiceDataGridToolbar";
+import {
+	DataverseGrid,
+	type GridAction,
+} from "@/components/data-grid/dataverse-grid";
 import type { Zap_investmentrecords } from "@/generated/models/Zap_investmentrecordsModel";
 import { Zap_investmentrecordsService } from "@/generated/services/Zap_investmentrecordsService";
 
@@ -34,7 +36,7 @@ export function InvestmentDataGrid({
 	className,
 }: InvestmentDataGridProps) {
 	return (
-		<ServiceDataGrid<Zap_investmentrecords>
+		<DataverseGrid<Zap_investmentrecords>
 			className={className}
 			title="Active Investment Record"
 			actions={actions}

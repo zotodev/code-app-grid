@@ -1,23 +1,23 @@
 ---
 name: data-grid
 description: >-
-  Build and configure Power Platform entity grids using ServiceDataGrid, column
-  definitions, and useServiceDataGrid. Use when adding a new entity grid page,
+  Build and configure Power Platform entity grids using DataverseGrid, column
+  definitions, and useDataverseGrid. Use when adding a new entity grid page,
   defining columns, enabling editing, sorting, filtering, or infinite scroll
   for tabular data in this project.
 ---
 
 # Data Grid
 
-This project wraps a DiceUI-style spreadsheet grid with Power Platform services. The standard path is **ServiceDataGrid** — do not wire `useDataGrid` + React Query manually unless building a non-service grid.
+This project wraps a DiceUI-style spreadsheet grid with Power Platform services. The standard path is **DataverseGrid** — do not wire `useDataGrid` + React Query manually unless building a non-service grid.
 
 ## Architecture
 
 ```
 Page (src/features/{entity}/)
   └─ EntityDataGrid (features/{entity}/components/data-grid.tsx)
-       └─ <ServiceDataGrid config={...} />  (shared, src/components/data-grid/)
-            └─ useServiceDataGrid(config)
+       └─ <DataverseGrid config={...} />  (shared, src/components/data-grid/)
+            └─ useDataverseGrid(config)
                  ├─ useInfiniteQuery → service.getAll (OData filter/sort/skipToken)
                  └─ useDataGrid → <DataGrid /> (virtualized cells, keyboard nav, search)
 ```
@@ -25,21 +25,21 @@ Page (src/features/{entity}/)
 | Layer | Location | Role |
 |-------|----------|------|
 | Page | `src/features/{entity}/*Page.tsx` | Compose feature grid + page chrome |
-| Entity grid | `src/features/{entity}/components/data-grid.tsx` | Wires `ServiceDataGrid` config for one entity |
+| Entity grid | `src/features/{entity}/components/data-grid.tsx` | Wires `DataverseGrid` config for one entity |
 | Columns | `src/features/{entity}/components/columns.tsx` | TanStack `ColumnDef[]` for that entity |
-| Shared grid | `src/components/data-grid/` | Reusable grid shell, cells, menus, toolbar |
-| Hook | `src/hooks/use-service-data-grid.ts` | React Query + OData + edit persistence |
-| Types | `src/types/service-data-grid.ts` | `ServiceDataGridConfig`, `DataService` |
-| Filters | `src/lib/odata-filters.ts` | Sort/filter state → OData |
+| Generic grid | `src/components/data-grid/` | UI, hooks, lib, types (spreadsheet layer) |
+| Dataverse grid | `src/components/data-grid/dataverse-grid/` | `DataverseGrid`, OData hook, config types |
+| Dataverse hook | `dataverse-grid/hooks/use-dataverse-grid.ts` | React Query + OData + edit persistence |
+| OData filters | `dataverse-grid/lib/odata-filters.ts` | Sort/filter state → OData |
 
-**Do not** put entity-specific columns or grid configs inside `src/components/data-grid/`. That folder is shared infrastructure only.
+**Do not** put entity-specific columns or configs inside `src/components/data-grid/`. Entity code stays in `src/features/{entity}/`.
 
 ## Quick start — new entity grid
 
 ```
 - [ ] 1. Create feature folder: src/features/{entity}/components/
 - [ ] 2. Add columns.tsx with ColumnDef[] exported as `columns`
-- [ ] 3. Add data-grid.tsx wrapping ServiceDataGrid with entity config
+- [ ] 3. Add data-grid.tsx wrapping DataverseGrid with entity config
 - [ ] 4. Add {Entity}Page.tsx that renders the feature data grid
 - [ ] 5. Wire route in src/routes/
 - [ ] 6. Verify idField matches the entity primary key field
@@ -53,14 +53,14 @@ src/features/investment/
 ├── InvestmentRecordsPage.tsx
 └── components/
     ├── columns.tsx          # ColumnDef<Zap_investmentrecords>[]
-    ├── data-grid.tsx        # InvestmentDataGrid → ServiceDataGrid
+    ├── data-grid.tsx        # InvestmentDataGrid → DataverseGrid
     └── grid-mode-toggle.tsx # Feature-specific UI (optional)
 ```
 
 **Entity data grid** (`src/features/investment/components/data-grid.tsx`):
 
 ```tsx
-import { ServiceDataGrid } from "@/components/data-grid/ServiceDataGrid";
+import { DataverseGrid } from "@/components/data-grid/dataverse-grid";
 import type { Zap_investmentrecords } from "@/generated/models/Zap_investmentrecordsModel";
 import { Zap_investmentrecordsService } from "@/generated/services/Zap_investmentrecordsService";
 
@@ -68,7 +68,7 @@ import { columns } from "./columns";
 
 export function InvestmentDataGrid({ readOnly = true }: { readOnly?: boolean }) {
   return (
-    <ServiceDataGrid<Zap_investmentrecords>
+    <DataverseGrid<Zap_investmentrecords>
       config={{
         queryKey: readOnly ? "investments" : "investments-editable",
         service: Zap_investmentrecordsService,
@@ -98,7 +98,7 @@ export function InvestmentRecordsPage({ readOnly = true }: { readOnly?: boolean 
 }
 ```
 
-## ServiceDataGridConfig
+## DataverseGridConfig
 
 | Option | Required | Default | Notes |
 |--------|----------|---------|-------|
@@ -118,7 +118,7 @@ export function InvestmentRecordsPage({ readOnly = true }: { readOnly?: boolean 
 Use `initialColumnVisibility` to hide columns when the grid first loads. Keys are the column `accessorKey` (OData field name); set to `false` to hide.
 
 ```tsx
-<ServiceDataGrid<Zap_investmentrecords>
+<DataverseGrid<Zap_investmentrecords>
   config={{
     queryKey: "investments",
     service: Zap_investmentrecordsService,
@@ -140,7 +140,7 @@ The user can still toggle hidden columns back on via the **View** menu in the to
 Use `initialColumnPinning` to pin columns to the left or right edge when the grid first loads.
 
 ```tsx
-<ServiceDataGrid<Zap_investmentrecords>
+<DataverseGrid<Zap_investmentrecords>
   config={{
     queryKey: "investments",
     service: Zap_investmentrecordsService,
@@ -162,10 +162,10 @@ Rules:
 
 ## Row actions
 
-Pass an `actions` prop to `ServiceDataGrid` to show an **Actions** dropdown in the toolbar whenever rows are selected. The button appears to the left of the Filter button and disappears when nothing is selected.
+Pass an `actions` prop to `DataverseGrid` to show an **Actions** dropdown in the toolbar whenever rows are selected. The button appears to the left of the Filter button and disappears when nothing is selected.
 
 ```tsx
-import type { GridAction } from "@/components/data-grid/ServiceDataGridToolbar";
+import type { GridAction } from "@/components/data-grid/dataverse-grid";
 
 const actions: GridAction<Zap_investmentrecords>[] = [
   {
@@ -194,7 +194,7 @@ const actions: GridAction<Zap_investmentrecords>[] = [
   },
 ];
 
-<ServiceDataGrid<Zap_investmentrecords>
+<DataverseGrid<Zap_investmentrecords>
   title="Active Investment Record"
   actions={actions}
   config={{ ... }}
@@ -235,14 +235,14 @@ Editing requires all of:
 
 - `readOnly: false` in config
 - Generated service exposes `update(id, changedFields)`
-- Column fields use `accessorKey` so `useServiceDataGrid` can detect updatable fields
+- Column fields use `accessorKey` so `useDataverseGrid` can detect updatable fields
 - Separate `queryKey` when toggling read-only vs editable (avoids stale cache)
 
 Edits are optimistic: cache patches immediately, then `service.update` runs per changed row with toast feedback.
 
 ## Server-side sort & filter
 
-Sorting and filtering are **server-side** (`manualSorting: true`, `manualFiltering: true`). UI state is translated to OData in `src/lib/odata-filters.ts`. Column `meta.cell.variant` determines how filter values are formatted (string vs number vs date vs option set).
+Sorting and filtering are **server-side** (`manualSorting: true`, `manualFiltering: true`). UI state is translated to OData in `src/components/data-grid/dataverse-grid/lib/odata-filters.ts`. Column `meta.cell.variant` determines how filter values are formatted (string vs number vs date vs option set).
 
 Do not add client-side `getSortedRowModel` / `getFilteredRowModel` overrides in service grids.
 
@@ -252,15 +252,15 @@ Page containers must allow the grid to shrink and scroll:
 
 ```tsx
 <div className="flex-1 p-6 flex flex-col gap-4 min-h-0">
-  <ServiceDataGrid className="flex-1 min-h-0" config={...} />
+  <DataverseGrid className="flex-1 min-h-0" config={...} />
 </div>
 ```
 
 ## Built-in toolbar features
 
-`ServiceDataGridToolbar` provides filter menu, sort menu, row height, column visibility, record count, and selection badge. No extra wiring needed.
+`DataverseGridToolbar` provides filter menu, sort menu, row height, column visibility, record count, and selection badge. No extra wiring needed.
 
-Keyboard search: `Cmd/Ctrl+F` (enabled via `enableSearch: true` in `useServiceDataGrid`).
+Keyboard search: `Cmd/Ctrl+F` (enabled via `enableSearch: true` in `useDataverseGrid`).
 
 ## Additional resources
 

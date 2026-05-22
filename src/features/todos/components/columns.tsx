@@ -2,7 +2,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 
 import type { Zap_todo1s } from "@/generated/models/Zap_todo1sModel";
 import { Zap_todo1szap_status } from "@/generated/models/Zap_todo1sModel";
-import { getFilterFn } from "@/lib/data-grid-filters";
+import { getFilterFn } from "@/components/data-grid";
 
 const statusOptions = Object.entries(Zap_todo1szap_status).map(
 	([key, label]) => ({

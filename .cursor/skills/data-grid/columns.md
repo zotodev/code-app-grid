@@ -9,7 +9,7 @@ Column files live in `src/features/{entity}/components/columns.tsx`. Export a ty
 import type { ColumnDef } from "@tanstack/react-table";
 
 import type { Zap_myentity } from "@/generated/models/Zap_myentityModel";
-import { getFilterFn } from "@/lib/data-grid-filters";
+import { getFilterFn } from "@/components/data-grid";
 
 export const columns: ColumnDef<Zap_myentity, unknown>[] = [
   {

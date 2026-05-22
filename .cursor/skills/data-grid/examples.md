@@ -10,7 +10,7 @@ Runnable references in this repo are noted where they exist. Other patterns are 
 
 ```tsx
 // src/features/investment/components/data-grid.tsx
-import { ServiceDataGrid } from "@/components/data-grid/ServiceDataGrid";
+import { DataverseGrid } from "@/components/data-grid/dataverse-grid";
 import type { Zap_investmentrecords } from "@/generated/models/Zap_investmentrecordsModel";
 import { Zap_investmentrecordsService } from "@/generated/services/Zap_investmentrecordsService";
 
@@ -18,7 +18,7 @@ import { columns } from "./columns";
 
 export function InvestmentDataGrid() {
   return (
-    <ServiceDataGrid<Zap_investmentrecords>
+    <DataverseGrid<Zap_investmentrecords>
       config={{
         queryKey: "investments",
         service: Zap_investmentrecordsService,
@@ -55,7 +55,7 @@ Pass `readOnly` into the feature data grid. Use a distinct `queryKey`:
 ```tsx
 export function InvestmentDataGrid({ readOnly = true }: { readOnly?: boolean }) {
   return (
-    <ServiceDataGrid<Zap_investmentrecords>
+    <DataverseGrid<Zap_investmentrecords>
       config={{
         queryKey: readOnly ? "investments" : "investments-editable",
         service: Zap_investmentrecordsService,
@@ -86,7 +86,7 @@ function EditablePage() {
 
 ```tsx
 // src/features/todos/components/data-grid.tsx
-import { ServiceDataGrid } from "@/components/data-grid/ServiceDataGrid";
+import { DataverseGrid } from "@/components/data-grid/dataverse-grid";
 import type { Zap_todo1s } from "@/generated/models/Zap_todo1sModel";
 import { Zap_todo1sService } from "@/generated/services/Zap_todo1sService";
 
@@ -94,7 +94,7 @@ import { columns } from "./columns";
 
 export function TodosDataGrid() {
   return (
-    <ServiceDataGrid<Zap_todo1s>
+    <DataverseGrid<Zap_todo1s>
       config={{
         queryKey: "todos",
         service: Zap_todo1sService,
@@ -218,10 +218,10 @@ export const columns: ColumnDef<Zap_todo1s, unknown>[] = [
 
 ## 9. Using the hook directly (advanced)
 
-Prefer feature `data-grid.tsx` wrapping `<ServiceDataGrid>`. Use `useServiceDataGrid` only when you need custom layout around the grid shell:
+Prefer feature `data-grid.tsx` wrapping `<DataverseGrid>`. Use `useDataverseGrid` only when you need custom layout around the grid shell:
 
 ```tsx
-const { table, data, isLoading, ...dataGridProps } = useServiceDataGrid(config);
+const { table, data, isLoading, ...dataGridProps } = useDataverseGrid(config);
 
 if (isLoading) return <DataGridSkeleton>...</DataGridSkeleton>;
 
@@ -242,7 +242,7 @@ Do not reimplement OData translation or infinite query logic.
 ```
 - [ ] Feature folder created under src/features/{entity}/
 - [ ] columns.tsx uses generated model type, exports `columns`
-- [ ] data-grid.tsx wraps ServiceDataGrid with entity config
+- [ ] data-grid.tsx wraps DataverseGrid with entity config
 - [ ] Page imports from feature folder, not src/components/data-grid/
 - [ ] idField is the entity primary key
 - [ ] All filterable columns have filterFn: getFilterFn()

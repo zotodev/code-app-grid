@@ -43,14 +43,14 @@ import {
   SortableItemHandle,
   SortableOverlay,
 } from "@/components/ui/sortable";
-import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
+import { useDebouncedCallback } from "./hooks/use-debounced-callback";
 import {
   getDefaultOperator,
   getOperatorsForVariant,
-} from "@/lib/data-grid-filters";
+} from "./lib/data-grid-filters";
 import { formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import type { FilterOperator, FilterValue } from "@/types/data-grid";
+import type { FilterOperator, FilterValue } from "./types/data-grid";
 
 const FILTER_SHORTCUT_KEY = "f";
 const REMOVE_FILTER_SHORTCUTS = new Set(["backspace", "delete"]);

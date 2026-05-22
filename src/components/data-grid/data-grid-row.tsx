@@ -1,10 +1,10 @@
 "use client";
 
 import type {
-  ColumnPinningState,
-  Row,
-  TableMeta,
-  VisibilityState,
+    ColumnPinningState,
+    Row,
+    TableMeta,
+    VisibilityState,
 } from "@tanstack/react-table";
 import type { VirtualItem } from "@tanstack/react-virtual";
 import * as React from "react";
@@ -12,18 +12,18 @@ import * as React from "react";
 import { DataGridCell } from "@/components/data-grid/data-grid-cell";
 import { useComposedRefs } from "@/lib/compose-refs";
 import {
-  flexRender,
-  getCellKey,
-  getColumnBorderVisibility,
-  getColumnPinningStyle,
-  getRowHeightValue,
-} from "@/lib/data-grid";
+    flexRender,
+    getCellKey,
+    getColumnBorderVisibility,
+    getColumnPinningStyle,
+    getRowHeightValue,
+} from "./lib/data-grid";
 import { cn } from "@/lib/utils";
 import type {
-  CellPosition,
-  Direction,
-  RowHeightValue,
-} from "@/types/data-grid";
+    CellPosition,
+    Direction,
+    RowHeightValue,
+} from "./types/data-grid";
 
 interface DataGridRowProps<TData> extends React.ComponentProps<"div"> {
   row: Row<TData>;

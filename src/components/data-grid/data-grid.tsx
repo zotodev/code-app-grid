@@ -9,14 +9,14 @@ import { DataGridPasteDialog } from "@/components/data-grid/data-grid-paste-dial
 import { DataGridRow } from "@/components/data-grid/data-grid-row";
 import { DataGridSearch } from "@/components/data-grid/data-grid-search";
 import { useAsRef } from "@/hooks/use-as-ref";
-import type { useDataGrid } from "@/hooks/use-data-grid";
+import type { useDataGrid } from "./hooks/use-data-grid";
 import {
 	flexRender,
 	getColumnBorderVisibility,
 	getColumnPinningStyle,
-} from "@/lib/data-grid";
+} from "./lib/data-grid";
 import { cn } from "@/lib/utils";
-import type { Direction } from "@/types/data-grid";
+import type { Direction } from "./types/data-grid";
 
 const EMPTY_CELL_SELECTION_SET = new Set<string>();
 

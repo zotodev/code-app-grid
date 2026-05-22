@@ -1,4 +1,4 @@
-import { ServiceDataGrid } from "@/components/data-grid/ServiceDataGrid";
+import { DataverseGrid } from "@/components/data-grid/dataverse-grid";
 import type { Zap_todo1s } from "@/generated/models/Zap_todo1sModel";
 import { Zap_todo1sService } from "@/generated/services/Zap_todo1sService";
 
@@ -14,7 +14,7 @@ export function TodosDataGrid({
 	className,
 }: TodosDataGridProps) {
 	return (
-		<ServiceDataGrid<Zap_todo1s>
+		<DataverseGrid<Zap_todo1s>
 			className={className}
 			title="Active Todos"
 			config={{

@@ -1,6 +1,6 @@
 import type { ColumnDef, ColumnFiltersState, SortingState } from "@tanstack/react-table";
 
-import type { FilterValue } from "@/types/data-grid";
+import type { FilterValue } from "../../types/data-grid";
 
 /**
  * Convert TanStack Table SortingState into OData $orderby strings.

@@ -1,8 +1,8 @@
 import type { ColumnDef } from "@tanstack/react-table";
 
+import { getFilterFn } from "@/components/data-grid";
 import type { Zap_investmentrecords } from "@/generated/models/Zap_investmentrecordsModel";
 import { Zap_investmentrecordszap_stocktickersymbol } from "@/generated/models/Zap_investmentrecordsModel";
-import { getFilterFn } from "@/lib/data-grid-filters";
 
 const tickerOptions = Object.entries(
 	Zap_investmentrecordszap_stocktickersymbol,

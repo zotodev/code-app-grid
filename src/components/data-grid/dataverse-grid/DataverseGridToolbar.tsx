@@ -3,10 +3,10 @@
 import type { Table } from "@tanstack/react-table";
 import { ChevronDown, Loader2 } from "lucide-react";
 
-import { DataGridFilterMenu } from "@/components/data-grid/data-grid-filter-menu";
-import { DataGridRowHeightMenu } from "@/components/data-grid/data-grid-row-height-menu";
-import { DataGridSortMenu } from "@/components/data-grid/data-grid-sort-menu";
-import { DataGridViewMenu } from "@/components/data-grid/data-grid-view-menu";
+import { DataGridFilterMenu } from "../data-grid-filter-menu";
+import { DataGridRowHeightMenu } from "../data-grid-row-height-menu";
+import { DataGridSortMenu } from "../data-grid-sort-menu";
+import { DataGridViewMenu } from "../data-grid-view-menu";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -33,7 +33,7 @@ export interface GridAction<TData> {
 	selectionMode?: "single" | "multiple" | "any";
 }
 
-interface ServiceDataGridToolbarProps<TData> {
+interface DataverseGridToolbarProps<TData> {
 	table: Table<TData>;
 	totalCount?: number;
 	dataCount: number;
@@ -44,7 +44,7 @@ interface ServiceDataGridToolbarProps<TData> {
 	actions?: GridAction<TData>[];
 }
 
-export function ServiceDataGridToolbar<TData>({
+export function DataverseGridToolbar<TData>({
 	table,
 	totalCount: _totalCount,
 	dataCount: _dataCount,
@@ -53,7 +53,7 @@ export function ServiceDataGridToolbar<TData>({
 	className,
 	title,
 	actions,
-}: ServiceDataGridToolbarProps<TData>) {
+}: DataverseGridToolbarProps<TData>) {
 	const selectedRows = table.getFilteredSelectedRowModel().rows;
 	const selectedRowCount = selectedRows.length;
 
@@ -68,7 +68,7 @@ export function ServiceDataGridToolbar<TData>({
 
 	return (
 		<div
-			data-slot="service-grid-toolbar"
+			data-slot="dataverse-grid-toolbar"
 			className={cn(
 				"flex items-center justify-between gap-2",
 				className,

@@ -3,33 +3,33 @@
 import { AlertCircle, Loader2 } from "lucide-react";
 import * as React from "react";
 
-import { DataGrid } from "@/components/data-grid/data-grid";
+import { DataGrid } from "../data-grid";
 import {
 	DataGridSkeleton,
 	DataGridSkeletonGrid,
 	DataGridSkeletonToolbar,
-} from "@/components/data-grid/data-grid-skeleton";
+} from "../data-grid-skeleton";
 import {
+	DataverseGridToolbar,
 	type GridAction,
-	ServiceDataGridToolbar,
-} from "@/components/data-grid/ServiceDataGridToolbar";
-import { useServiceDataGrid } from "@/hooks/use-service-data-grid";
+} from "./DataverseGridToolbar";
+import { useDataverseGrid } from "./hooks/use-dataverse-grid";
+import type { DataverseGridConfig } from "./types/dataverse-grid-config";
 import { cn } from "@/lib/utils";
-import type { ServiceDataGridConfig } from "@/types/service-data-grid";
 
-interface ServiceDataGridProps<T extends object> {
-	config: ServiceDataGridConfig<T>;
+interface DataverseGridProps<T extends object> {
+	config: DataverseGridConfig<T>;
 	className?: string;
 	title?: string;
 	actions?: GridAction<T>[];
 }
 
-export function ServiceDataGrid<T extends object>({
+export function DataverseGrid<T extends object>({
 	config,
 	className,
 	title,
 	actions,
-}: ServiceDataGridProps<T>) {
+}: DataverseGridProps<T>) {
 	const {
 		query,
 		data,
@@ -42,7 +42,7 @@ export function ServiceDataGrid<T extends object>({
 		error,
 		isSaving: _isSaving,
 		...dataGridProps
-	} = useServiceDataGrid(config);
+	} = useDataverseGrid(config);
 
 	const sentinelRef = React.useRef<HTMLDivElement>(null);
 
@@ -109,13 +109,13 @@ export function ServiceDataGrid<T extends object>({
 	if (data.length === 0 && !hasNextPage) {
 		return (
 			<div className={cn("flex flex-col gap-2", className)}>
-			<ServiceDataGridToolbar
-				table={dataGridProps.table}
-				totalCount={totalCount}
-				dataCount={0}
-				title={title}
-				actions={actions}
-			/>
+				<DataverseGridToolbar
+					table={dataGridProps.table}
+					totalCount={totalCount}
+					dataCount={0}
+					title={title}
+					actions={actions}
+				/>
 				<div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed p-12 text-muted-foreground">
 					<p className="text-sm">No records found</p>
 					<p className="text-xs">
@@ -130,50 +130,54 @@ export function ServiceDataGrid<T extends object>({
 		<div
 			className={cn("flex flex-1 flex-col gap-2 min-h-0", className)}
 		>
-		<ServiceDataGridToolbar
-			table={dataGridProps.table}
-			totalCount={totalCount}
-			dataCount={data.length}
-			isLoading={isLoading}
-			isFetchingNextPage={isFetchingNextPage}
-			title={title}
-			actions={actions}
-		/>
+			<DataverseGridToolbar
+				table={dataGridProps.table}
+				totalCount={totalCount}
+				dataCount={data.length}
+				isLoading={isLoading}
+				isFetchingNextPage={isFetchingNextPage}
+				title={title}
+				actions={actions}
+			/>
 
-		<DataGrid
-			{...dataGridProps}
-			sentinelRef={sentinelRef}
-			className="flex-1 min-h-0"
-		/>
+			<DataGrid
+				{...dataGridProps}
+				sentinelRef={sentinelRef}
+				className="flex-1 min-h-0"
+			/>
 
-		{/* Bottom footer: row count on left, selected count + loading on right */}
-		<div data-slot="service-grid-footer" className="flex items-center justify-between text-sm text-muted-foreground">
-			<div className="flex items-center gap-4">
-				<span>
-					Rows:{" "}
-					{isFetchingNextPage
-						? `${data.length.toLocaleString()}…`
-						: data.length.toLocaleString()}
-					{totalCount !== undefined &&
-						totalCount !== data.length &&
-						` of ${totalCount.toLocaleString()}`}
-				</span>
-				{dataGridProps.table.getFilteredSelectedRowModel().rows.length > 0 && (
+			{/* Bottom footer: row count on left, selected count + loading on right */}
+			<div
+				data-slot="dataverse-grid-footer"
+				className="flex items-center justify-between text-sm text-muted-foreground"
+			>
+				<div className="flex items-center gap-4">
 					<span>
-						Selected:{" "}
-						{dataGridProps.table
-							.getFilteredSelectedRowModel()
-							.rows.length.toLocaleString()}
+						Rows:{" "}
+						{isFetchingNextPage
+							? `${data.length.toLocaleString()}…`
+							: data.length.toLocaleString()}
+						{totalCount !== undefined &&
+							totalCount !== data.length &&
+							` of ${totalCount.toLocaleString()}`}
 					</span>
+					{dataGridProps.table.getFilteredSelectedRowModel().rows.length >
+						0 && (
+						<span>
+							Selected:{" "}
+							{dataGridProps.table
+								.getFilteredSelectedRowModel()
+								.rows.length.toLocaleString()}
+						</span>
+					)}
+				</div>
+				{isFetchingNextPage && (
+					<div className="flex items-center gap-1.5">
+						<Loader2 className="size-3.5 animate-spin" />
+						<span>Loading more…</span>
+					</div>
 				)}
 			</div>
-			{isFetchingNextPage && (
-				<div className="flex items-center gap-1.5">
-					<Loader2 className="size-3.5 animate-spin" />
-					<span>Loading more…</span>
-				</div>
-			)}
-		</div>
 		</div>
 	);
 }

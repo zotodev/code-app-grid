@@ -26,7 +26,7 @@ import type {
   Direction,
   FileCellData,
   RowHeightValue,
-} from "@/types/data-grid";
+} from "../types/data-grid";
 
 export function flexRender<TProps extends object>(
   Comp: ((props: TProps) => React.ReactNode) | string | undefined,
@@ -394,8 +394,8 @@ export function getIsInPopover(element: unknown): boolean {
     element.closest("[data-grid-popover]") !== null ||
     element.closest("[data-slot='dropdown-menu-content']") !== null ||
     element.closest("[data-slot='popover-content']") !== null ||
-    element.closest("[data-slot='service-grid-toolbar']") !== null ||
-    element.closest("[data-slot='service-grid-footer']") !== null
+    element.closest("[data-slot='dataverse-grid-toolbar']") !== null ||
+    element.closest("[data-slot='dataverse-grid-footer']") !== null
   );
 }
 

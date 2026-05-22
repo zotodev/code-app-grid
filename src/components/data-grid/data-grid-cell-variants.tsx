@@ -32,12 +32,14 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
-import { useBadgeOverflow } from "@/hooks/use-badge-overflow";
+import { cn } from "@/lib/utils";
+
+import { useBadgeOverflow } from "./hooks/use-badge-overflow";
 import {
 	useContainerSideOffset,
 	useSyncedState,
-} from "@/hooks/use-cell-sync";
-import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
+} from "./hooks/use-cell-sync";
+import { useDebouncedCallback } from "./hooks/use-debounced-callback";
 import {
 	formatDateForDisplay,
 	formatDateToString,
@@ -49,12 +51,11 @@ import {
 	getUrlHref,
 	normalizeSelectValue,
 	parseLocalDate,
-} from "@/lib/data-grid";
-import { cn } from "@/lib/utils";
+} from "./lib/data-grid";
 import type {
 	DataGridCellProps,
 	FileCellData,
-} from "@/types/data-grid";
+} from "./types/data-grid";
 
 export function ShortTextCell<TData>({
 	cell,

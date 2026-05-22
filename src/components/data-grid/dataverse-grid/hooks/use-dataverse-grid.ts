@@ -9,10 +9,10 @@ import type { ColumnDef, ColumnFiltersState, SortingState } from "@tanstack/reac
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { getDataGridSelectColumn } from "@/components/data-grid/data-grid-select-column";
-import { useDataGrid } from "@/hooks/use-data-grid";
-import { filtersToOData, sortingToOData } from "@/lib/odata-filters";
-import type { ServiceDataGridConfig } from "@/types/service-data-grid";
+import { getDataGridSelectColumn } from "../../data-grid-select-column";
+import { useDataGrid } from "../../hooks/use-data-grid";
+import type { DataverseGridConfig } from "../types/dataverse-grid-config";
+import { filtersToOData, sortingToOData } from "../lib/odata-filters";
 
 const DEFAULT_PAGE_SIZE = 50;
 
@@ -123,8 +123,8 @@ function patchInfiniteQueryCache<T extends Record<string, unknown>>(
  * 5. Configures useDataGrid with manualSorting + manualFiltering (server-side)
  * 6. Persists cell edits via service.update when readOnly is false
  */
-export function useServiceDataGrid<T extends object>(
-	config: ServiceDataGridConfig<T>,
+export function useDataverseGrid<T extends object>(
+	config: DataverseGridConfig<T>,
 ) {
 	const {
 		queryKey,

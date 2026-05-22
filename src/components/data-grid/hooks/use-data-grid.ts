@@ -32,7 +32,7 @@ import {
   parseCellKey,
   parseTsv,
   scrollCellIntoView,
-} from "@/lib/data-grid";
+} from "../lib/data-grid";
 import type {
   CellPosition,
   CellUpdate,
@@ -44,7 +44,7 @@ import type {
   RowHeightValue,
   SearchState,
   SelectionState,
-} from "@/types/data-grid";
+} from "../types/data-grid";
 
 const DEFAULT_ROW_HEIGHT = "short";
 const OVERSCAN = 6;

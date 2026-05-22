@@ -9,28 +9,37 @@ src/
 │   │   ├── InvestmentRecordsPage.tsx
 │   │   └── components/
 │   │       ├── columns.tsx              # Entity column defs
-│   │       ├── data-grid.tsx            # InvestmentDataGrid
+│   │       ├── data-grid.tsx            # InvestmentDataGrid → DataverseGrid
 │   │       └── grid-mode-toggle.tsx     # Feature-specific UI
 │   └── todos/
 │       └── components/
 │           ├── columns.tsx
-│           └── data-grid.tsx            # TodosDataGrid
+│           └── data-grid.tsx            # TodosDataGrid → DataverseGrid
 ├── components/
-│   └── data-grid/                       # Shared grid infrastructure only
-│       ├── ServiceDataGrid.tsx          # Generic service-backed grid shell
-│       ├── ServiceDataGridToolbar.tsx   # Filter, sort, view, row height
+│   └── data-grid/                       # All grid code in one module
+│       ├── index.ts                     # getFilterFn, grid types
 │       ├── data-grid.tsx                # Low-level virtualized grid UI
-│       └── data-grid-*.tsx              # Cell variants, menus, search, etc.
-├── hooks/
-│   ├── use-service-data-grid.ts         # Service + React Query bridge
-│   └── use-data-grid.ts                 # DiceUI grid behavior (internal)
-├── lib/
-│   ├── data-grid-filters.ts             # Client filterFn + operator lists
-│   ├── data-grid.ts                     # Grid utilities
-│   └── odata-filters.ts                 # Sort/filter → OData strings
-├── types/
-│   ├── service-data-grid.ts             # ServiceDataGridConfig
-│   └── data-grid.ts                     # Cell variants, filter types
+│       ├── data-grid-*.tsx              # Cells, menus, search, skeleton
+│       ├── hooks/
+│       │   ├── use-data-grid.ts         # DiceUI grid behavior
+│       │   ├── use-cell-sync.ts
+│       │   ├── use-badge-overflow.ts
+│       │   └── use-debounced-callback.ts
+│       ├── lib/
+│       │   ├── data-grid.ts             # Grid utilities
+│       │   └── data-grid-filters.ts     # Client filterFn + operators
+│       ├── types/
+│       │   └── data-grid.ts             # CellOpts, FilterValue, etc.
+│       └── dataverse-grid/              # Power Platform / OData layer
+│           ├── index.ts                 # DataverseGrid, GridAction, config
+│           ├── DataverseGrid.tsx
+│           ├── DataverseGridToolbar.tsx
+│           ├── hooks/
+│           │   └── use-dataverse-grid.ts
+│           ├── types/
+│           │   └── dataverse-grid-config.ts
+│           └── lib/
+│               └── odata-filters.ts
 └── generated/
     ├── models/*Model.ts                 # Entity types + enums
     └── services/*Service.ts             # getAll, update, create, delete
@@ -70,9 +79,9 @@ Variant → value formatting (in `odata-filters.ts`):
 - `date`, `datetime` → date strings
 - text variants → quoted strings with escaped `'`
 
-## useServiceDataGrid return value
+## useDataverseGrid return value
 
-Spread into `<DataGrid />` via `ServiceDataGrid`:
+Spread into `<DataGrid />` via `DataverseGrid`:
 
 | Field | Purpose |
 |-------|---------|
@@ -85,7 +94,7 @@ Spread into `<DataGrid />` via `ServiceDataGrid`:
 | `isLoading`, `isError`, `error` | Top-level states |
 | `isSaving` | Update mutation pending |
 
-## useDataGrid options (via useServiceDataGrid)
+## useDataGrid options (via useDataverseGrid)
 
 These are set internally; override only if using `useDataGrid` standalone:
 
@@ -102,7 +111,7 @@ Additional standalone options: `onRowAdd`, `onRowsDelete`, `enablePaste`, `rowHe
 
 ## Cell variant type (`CellOpts`)
 
-Defined in `src/types/data-grid.ts`:
+Defined in `src/components/data-grid/types/data-grid.ts`:
 
 ```ts
 | { variant: "short-text" }
@@ -142,7 +151,7 @@ When `enableRowSelection: true`, `getDataGridSelectColumn()` is prepended unless
 
 Only fields with `accessorKey` (or `id`) in column defs are considered updatable.
 
-## UI states (ServiceDataGrid)
+## UI states (DataverseGrid)
 
 | State | UI |
 |-------|-----|
