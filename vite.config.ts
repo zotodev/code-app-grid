@@ -7,6 +7,7 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
 import { consoleForwardPlugin } from "./plugins/console-forward-plugin";
+import { createManualChunks } from "./vite/chunk-splitting";
 
 export default defineConfig({
 	plugins: [
@@ -32,6 +33,14 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			"@": path.resolve(__dirname, "./src"),
+		},
+	},
+	build: {
+		chunkSizeWarningLimit: 300,
+		rollupOptions: {
+			output: {
+				manualChunks: createManualChunks(),
+			},
 		},
 	},
 });
